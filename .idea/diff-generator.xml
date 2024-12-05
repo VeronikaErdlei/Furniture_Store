@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DiffGenerationConfig">
+    <option name="snapshotDb" value="false" />
+    <option name="snapshotModelValue" value="Furniture_Store:entityManagerFactory" />
+    <option name="sourceModelValue" value="Furniture_Store:entityManagerFactory" />
+    <option name="targetDbValue" value="ccdc1456-7ef0-403c-b47b-53f8cec3bed2" />
+    <option name="updateDbConnectionName" value="ccdc1456-7ef0-403c-b47b-53f8cec3bed2" />
+    <option name="updateLogLevel" value="INFO" />
+  </component>
+</project>
