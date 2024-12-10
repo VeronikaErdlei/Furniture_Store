@@ -18,7 +18,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Product findTopByOrderByDiscountDesc();
 
 
-
     @Query("SELECT p FROM Product p WHERE " +
             "(:minPrice IS NULL OR p.price >= :minPrice) AND " +
             "(:maxPrice IS NULL OR p.price <= :maxPrice) AND " +

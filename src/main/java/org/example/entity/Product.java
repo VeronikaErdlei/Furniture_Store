@@ -1,5 +1,6 @@
 package org.example.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,23 +28,32 @@ public class Product {
 
     private BigDecimal discountPrice;
 
+    @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
     private Double discount;
 
     @ManyToOne
     @JoinColumn(name = "category_id")
+    @JsonIgnore
+
     private Category category;
 
     @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
+    @JsonIgnore
+
     private Integer numberOfPurchases = 0;
 
     private Boolean onSale;
 
     @Column(name = "discount_percentage")
+    @JsonIgnore
+
     private BigDecimal discountPercentage;
 
-    @Column(nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
+    @Column(name = "created_date", nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
+    @JsonIgnore
+
     private LocalDateTime createdDate;
 
     public Product(Long id, String name, BigDecimal price, Boolean onSale, Category category) {

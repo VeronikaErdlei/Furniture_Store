@@ -1,5 +1,6 @@
 package org.example.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,6 +19,7 @@ public class Category {
     private Long id;
 
     @Column(nullable = false, unique = true)
+    @JsonIgnore
     private String name;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)

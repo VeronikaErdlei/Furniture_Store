@@ -20,6 +20,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByUserId(Long userId);
     List<Order> findByUser(User user);
 
+
     @Query("SELECT p, COUNT(p) AS purchases FROM Order o JOIN o.orderProducts op JOIN op.product p WHERE o.status = :status GROUP BY p ORDER BY purchases DESC")
     List<Object[]> findTopBoughtProductsByStatus(@Param("status") OrderStatus status);
 

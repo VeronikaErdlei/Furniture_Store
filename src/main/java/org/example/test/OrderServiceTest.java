@@ -73,14 +73,14 @@ public class OrderServiceTest {
 
     @Test
     public void testCreateOrder() {
+        OrderItemDTO itemDTO = new OrderItemDTO();
+        itemDTO.setProductId(1L);
+        itemDTO.setQuantity(2);
+
         OrderDTO orderDTO = new OrderDTO();
         orderDTO.setId(1L);
         orderDTO.setOrderDate(LocalDateTime.now());
         orderDTO.setStatus("CREATED");
-
-        OrderItemDTO itemDTO = new OrderItemDTO();
-        itemDTO.setProductId(1L);
-        itemDTO.setQuantity(2);
         orderDTO.setItems(Collections.singletonList(itemDTO));
 
         Product product = new Product();
@@ -95,7 +95,9 @@ public class OrderServiceTest {
         when(orderRepository.save(any(Order.class))).thenReturn(order);
         when(orderMapper.toDTO(order)).thenReturn(orderDTO);
 
-        OrderDTO result = orderService.createOrder(orderDTO);
+        Long customerId = 1L;
+        List<OrderItemDTO> orderItemDTOs = Collections.singletonList(itemDTO);
+        OrderDTO result = orderService.createOrder(customerId, orderItemDTOs);
 
         assertNotNull(result);
         assertEquals(1L, result.getId());
@@ -104,6 +106,7 @@ public class OrderServiceTest {
         verify(orderMapper, times(1)).toEntity(eq(orderDTO), anyList());
         verify(orderRepository, times(1)).save(order);
     }
+
 
     @Test
     public void testDeleteOrder() {

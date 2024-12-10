@@ -8,6 +8,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+
+/**
+ * This class starts the Spring Boot application and executes code at startup
+ * to encode a password using the BCrypt algorithm. The encoded password is
+ * printed to the console.
+ */
+
+
+
+
 @SpringBootApplication
 @EntityScan(basePackages = "org.example.entity")
 @EnableJpaRepositories(basePackages = "org.example.repository")

@@ -2,7 +2,11 @@ package org.example.service;
 
 import jakarta.transaction.Transactional;
 import org.example.dto.OrderDTO;
-import org.example.entity.*;
+import org.example.dto.OrderItemDTO;
+import org.example.entity.Order;
+import org.example.entity.OrderItem;
+import org.example.entity.OrderStatus;
+import org.example.entity.Product;
 import org.example.mapper.OrderMapper;
 import org.example.repository.OrderRepository;
 import org.example.repository.ProductRepository;
@@ -40,16 +44,32 @@ public class OrderService {
         return orderRepository.findByCustomerId(customerId);
     }
 
-    public OrderDTO createOrder(OrderDTO dto) {
-        List<OrderItem> items = dto.getItems().stream().map(itemDTO -> {
-            Product product = productRepository.findById
-                    (itemDTO.getProductId()).orElseThrow(() -> new RuntimeException("Product not found"));
-            return orderMapper.toEntity(itemDTO, product, null);
-        }).collect(Collectors.toList());
+    @Transactional
+    public OrderDTO createOrder(Long customerId, List<OrderItemDTO> orderItemDTOs) {
+        Order order = new Order();
+        order.setCreatedAt(LocalDateTime.now());
+        order.setCustomerId(customerId);
+        order.setOrderDate(LocalDateTime.now());
+        order.setShippingAddress("123 Main Street");
+        order.setBillingAddress("123 Main Street");
+        order.setPaymentStatus("PAID");
+        order.setStatus(OrderStatus.PENDING);
+        order.setTotalPrice(new BigDecimal("100.00"));
 
-        Order order = orderMapper.toEntity(dto, items);
-        items.forEach(item -> item.setOrder(order));
+        for (OrderItemDTO itemDTO : orderItemDTOs) {
+            Product product = productRepository.findById(itemDTO.getProductId())
+                    .orElseThrow(() -> new RuntimeException("Product not found"));
+
+            OrderItem orderItem = new OrderItem();
+            orderItem.setProduct(product);
+            orderItem.setQuantity(itemDTO.getQuantity());
+            orderItem.setPrice(product.getPrice());
+
+            order.addOrderItem(orderItem);
+        }
+
         Order savedOrder = orderRepository.save(order);
+
         return orderMapper.toDTO(savedOrder);
     }
 
@@ -95,7 +115,6 @@ public class OrderService {
 
     @Transactional
     public void updateStatuses() {
-
         List<Order> pendingOrders = orderRepository.findByStatus(OrderStatus.PENDING);
         for (Order order : pendingOrders) {
             if (order.getCreatedDate().isBefore(LocalDateTime.now().minusHours(24))) {
@@ -105,17 +124,13 @@ public class OrderService {
         }
     }
 
-
     private Optional<Order> getCurrentOrder() {
         return orderRepository.findActiveOrderForUser(getCurrentUserId());
     }
 
-
-    private OrderItem findOrderItemInCart(Order order, Long productId)
-    {
+    private OrderItem findOrderItemInCart(Order order, Long productId) {
         return order.getOrderItems().stream().filter(item -> item.getProduct().getId().equals(productId)).findFirst().orElse(null);
     }
-
 
     private Long getCurrentUserId() {
         return 1L;
@@ -135,15 +150,11 @@ public class OrderService {
 
     public OrderDTO toDTO(Order order) {
         return orderMapper.toDTO(order);
-
     }
-
-    public List<Order> getOrderHistory(User user) {
-        return orderRepository.findByUser(user);
-    }
-
-
 }
+
+
+
 
 
 

@@ -1,10 +1,12 @@
 package org.example.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -15,6 +17,7 @@ import java.util.Objects;
 @Table(name = "orders")
 @Getter
 @Setter
+
 
 public class Order {
 
@@ -28,25 +31,33 @@ public class Order {
     private Long id;
 
     @Column(name = "created_at", nullable = false)
+    @JsonIgnore
     private LocalDateTime createdAt;
 
     @Column(name = "customer_id", nullable = false)
+    @JsonIgnore
     private Long customerId;
 
     @Column(name = "order_date", nullable = false)
+    @JsonIgnore
     private LocalDateTime orderDate;
 
     @Column(name = "shipping_address", nullable = false)
+    @JsonIgnore
     private String shippingAddress;
 
     @Column(name = "billing_address", nullable = false)
+    @JsonIgnore
     private String billingAddress;
 
     @Column(name = "payment_status", nullable = false)
+    @JsonIgnore
     private String paymentStatus;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @JsonIgnore
+
     private OrderStatus status;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -55,7 +66,10 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderProduct> orderProducts = new ArrayList<>();
 
+
+
     @Column(name = "total_price", nullable = false)
+    @JsonIgnore
     @NotNull
     @DecimalMin(value = "0.00", message = "Total price cannot be negative")
     private BigDecimal totalPrice;
@@ -72,6 +86,7 @@ public class Order {
     private BigDecimal expenses;
 
     public Order() {
+        this.createdAt = LocalDateTime.now();
     }
 
     public void addOrderItem(OrderItem orderItem) {
@@ -94,8 +109,8 @@ public class Order {
     }
 
     public BigDecimal calculateDailyProfit() {
-        BigDecimal profitPercentage = new BigDecimal("0.1");
-        return totalPrice.multiply(profitPercentage);
+        BigDecimal profitPercentage = new BigDecimal("0.2");
+        return totalPrice.subtract(expenses).multiply(profitPercentage);
     }
 
     @Transient
@@ -118,9 +133,11 @@ public class Order {
     public int hashCode() {
         return Objects.hash(id);
     }
+
     public void updateStatus(OrderStatus orderStatus) {
         this.status = orderStatus;
     }
 
 }
+
 

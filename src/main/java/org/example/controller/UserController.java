@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.example.dto.UserRegistrationDTO;
 import org.example.service.UserService;
@@ -9,10 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,26 +28,48 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PutMapping("/edit-profile")
-    public ResponseEntity<String> editProfile(@Valid @RequestBody UserRegistrationDTO userRegistrationDto,
-                                              BindingResult bindingResult) {
-        logger.info("Received request to edit profile: {}", userRegistrationDto.getEmail());
+    @Operation(
+            summary = "Register a new user",
+            description = "Handles the registration of a new user. Validates the user input and creates the user if successful."
+    )
+    @PostMapping("/register")
+    public ResponseEntity<String> registerUser(@Valid @RequestBody UserRegistrationDTO userRegistrationDto,
+                                               BindingResult bindingResult) {
+        logger.info("Received request for user registration: {}", userRegistrationDto.getEmail());
 
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = new HashMap<>();
             bindingResult.getFieldErrors().forEach(error -> {
                 errors.put(error.getField(), error.getDefaultMessage());
             });
-            logger.warn("Validation errors: {}", errors);
+            logger.warn("Validation errors during registration: {}", errors);
             return ResponseEntity.badRequest().body(errors.toString());
         }
 
         try {
-            userService.updateUserProfile(userRegistrationDto);
-            logger.info("Profile successfully updated for user: {}", userRegistrationDto.getEmail());
-            return ResponseEntity.ok("Profile updated successfully");
+            userService.registerUser(userRegistrationDto);
+            logger.info("User successfully registered: {}", userRegistrationDto.getEmail());
+            return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
         } catch (Exception e) {
-            logger.error("Error while updating profile: {}", e.getMessage());
+            logger.error("Error during registration: {}", e.getMessage());
+            return handleGenericException(e);
+        }
+    }
+
+    @Operation(
+            summary = "Delete a user",
+            description = "Handles the deletion of a user by their ID."
+    )
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<String> deleteUser(@PathVariable Long userId) {
+        logger.info("Received request to delete user with ID: {}", userId);
+
+        try {
+            userService.deleteUser(userId);
+            logger.info("User successfully deleted with ID: {}", userId);
+            return ResponseEntity.ok("User deleted successfully");
+        } catch (Exception e) {
+            logger.error("Error during user deletion: {}", e.getMessage());
             return handleGenericException(e);
         }
     }
@@ -57,4 +78,5 @@ public class UserController {
         logger.error("Unhandled exception: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + ex.getMessage());
     }
+
 }

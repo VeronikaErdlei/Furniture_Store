@@ -8,8 +8,9 @@ public enum OrderStatus {
     AWAITING_PAYMENT,
     PAID,
     IN_TRANSIT,
-    EXPIRED, CREATED
+    EXPIRED,
+    CREATED,
 
-    }
+}
 
 

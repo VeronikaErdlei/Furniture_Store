@@ -2,10 +2,7 @@ package org.example.mapper;
 
 import org.example.dto.CartDTO;
 import org.example.dto.CartItemDTO;
-import org.example.entity.Cart;
-import org.example.entity.CartItem;
-import org.example.entity.Product;
-import org.example.entity.User;
+import org.example.entity.*;
 import java.math.BigDecimal;
 import java.util.stream.Collectors;
 
@@ -41,8 +38,8 @@ public class CartMapper {
 
     public static Cart toEntity(CartDTO cartDTO) {
         Cart cart = new Cart();
-        cart.setId(cartDTO.getId());
-        cart.setUser(new User(cartDTO.getUserId()));
+        User user = new User(cartDTO.getUserId(), "defaultEmail", "defaultPassword", UserRole.USER, "defaultName", "defaultPhone", null);
+        cart.setUser(user);
 
         cart.setCartItems(cartDTO.getCartItems().stream()
                 .map(itemDTO -> toEntity(itemDTO, cart))

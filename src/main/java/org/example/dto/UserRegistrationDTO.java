@@ -9,6 +9,9 @@ import org.example.entity.UserRole;
 
 @Getter
 @Setter
+
+
+
 public class UserRegistrationDTO {
 
     @NotEmpty(message = "Name cannot be empty")

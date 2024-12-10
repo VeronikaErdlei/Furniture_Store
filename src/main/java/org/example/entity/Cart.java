@@ -6,15 +6,16 @@ import lombok.*;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+@Entity
+@Table(name = "carts")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(exclude = {"user", "cartItems"})
-@Table(name = "carts")
-@Entity
 
 public class Cart {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cart_id", columnDefinition = "int")
@@ -34,8 +35,7 @@ public class Cart {
     }
 
     public void removeProduct(Product product) {
-        CartItem itemToRemove;
-        itemToRemove = cartItems.stream()
+        CartItem itemToRemove = cartItems.stream()
                 .filter(item -> item.getProduct().equals(product))
                 .findFirst()
                 .orElse(null);
